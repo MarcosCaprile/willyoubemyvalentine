@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Willst du mein Valentine sein? 💘</title>
+  <style>
+    :root{
+      --bg1:#ffe6f1;
+      --bg2:#fff7fb;
+      --card:#ffffffcc;
+      --stroke:#ffffff;
+      --text:#2b2b2b;
+      --pink:#ff4d8d;
+      --pink2:#ff77a8;
+      --shadow: 0 18px 40px rgba(255, 77, 141, .18);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      overflow:hidden;
+      background:
+        radial-gradient(1200px 700px at 20% 20%, var(--bg1), transparent 60%),
+        radial-gradient(1000px 700px at 80% 30%, #ffd1e4, transparent 55%),
+        linear-gradient(180deg, var(--bg2), #fff);
+    }
+
+    /* floating hearts in background */
+    .bg-hearts{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.35;
+      filter: blur(.2px);
+    }
+    .heart{
+      position:absolute;
+      width:16px; height:16px;
+      transform: rotate(45deg);
+      background: var(--pink2);
+      border-radius: 4px;
+      animation: floatUp linear infinite;
+    }
+    .heart::before, .heart::after{
+      content:"";
+      position:absolute;
+      width:16px; height:16px;
+      background: inherit;
+      border-radius:50%;
+    }
+    .heart::before{ left:-8px; top:0; }
+    .heart::after{ left:0; top:-8px; }
+    @keyframes floatUp{
+      from{ transform: translateY(120vh) rotate(45deg); opacity:0; }
+      10%{ opacity:.9; }
+      to{ transform: translateY(-20vh) rotate(45deg); opacity:0; }
+    }
+
+    .wrap{
+      height:100%;
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+
+    .card{
+      width:min(720px, 92vw);
+      background: var(--card);
+      border: 2px solid var(--stroke);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      padding: 28px 22px;
+      backdrop-filter: blur(10px);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .sparkle{
+      position:absolute;
+      inset:-40px;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.85), transparent 35%),
+        radial-gradient(circle at 75% 20%, rgba(255,255,255,.7), transparent 38%),
+        radial-gradient(circle at 80% 80%, rgba(255,255,255,.6), transparent 42%);
+      opacity:.45;
+      pointer-events:none;
+      transform: rotate(-6deg);
+    }
+
+    h1{
+      margin: 0 0 10px;
+      font-size: clamp(28px, 3.8vw, 44px);
+      line-height:1.05;
+      letter-spacing:-.02em;
+    }
+    p{
+      margin: 10px 0 18px;
+      font-size: clamp(15px, 2.1vw, 18px);
+      opacity:.9;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(255,77,141,.25);
+      box-shadow: 0 10px 24px rgba(255,77,141,.12);
+      margin-bottom:16px;
+      font-weight:600;
+    }
+    .pill .dot{
+      width:10px; height:10px;
+      background: var(--pink);
+      border-radius:50%;
+      box-shadow: 0 0 0 6px rgba(255,77,141,.15);
+    }
+
+    .stage{
+      position:relative;
+      min-height: 240px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.45));
+      border: 1px dashed rgba(255,77,141,.25);
+      padding: 22px;
+      overflow:hidden;
+    }
+
+    .buttons{
+      position:relative;
+      height: 170px; /* room for the escaping button */
+      margin-top: 10px;
+    }
+
+    button{
+      border:0;
+      cursor:pointer;
+      font-size: 18px;
+      font-weight:800;
+      padding: 14px 18px;
+      border-radius: 16px;
+      transition: transform .12s ease, filter .12s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active{ transform: scale(.98); }
+
+    #yesBtn{
+      background: linear-gradient(180deg, var(--pink), #ff2f78);
+      color:white;
+      box-shadow: 0 14px 30px rgba(255, 47, 120, .28);
+      position:absolute;
+      left: 18px;
+      top: 18px;
+    }
+    #yesBtn:hover{ filter: brightness(1.03); transform: translateY(-1px); }
+
+    #noBtn{
+      position:absolute;
+      left: 210px;
+      top: 22px;
+      background: #fff;
+      color: #333;
+      border: 2px solid rgba(255, 77, 141, .35);
+      box-shadow: 0 12px 24px rgba(0,0,0,.06);
+    }
+    #noBtn:hover{ transform: translateY(-1px); }
+
+    .tiny{
+      margin-top:12px;
+      opacity:.75;
+      font-size: 13px;
+    }
+
+    /* success view */
+    .success{
+      display:none;
+      animation: pop .5s ease both;
+    }
+    @keyframes pop{
+      from{ transform: translateY(10px) scale(.98); opacity:0; }
+      to{ transform: translateY(0) scale(1); opacity:1; }
+    }
+
+    .big-heart{
+      width: 120px; height:120px;
+      margin: 6px auto 10px;
+      position:relative;
+      transform: rotate(45deg);
+      background: linear-gradient(180deg, #ff5a99, #ff2f78);
+      border-radius: 22px;
+      box-shadow: 0 18px 36px rgba(255,47,120,.25);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    .big-heart::before, .big-heart::after{
+      content:"";
+      position:absolute;
+      width:120px; height:120px;
+      background: inherit;
+      border-radius:50%;
+    }
+    .big-heart::before{ left:-60px; top:0; }
+    .big-heart::after{ left:0; top:-60px; }
+    @keyframes pulse{
+      0%,100%{ transform: rotate(45deg) scale(1); }
+      50%{ transform: rotate(45deg) scale(1.06); }
+    }
+
+    .success h2{
+      margin: 6px 0 8px;
+      text-align:center;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing:-.01em;
+    }
+    .success .msg{
+      max-width: 52ch;
+      margin: 0 auto;
+      text-align:center;
+      font-size: clamp(15px, 2.1vw, 18px);
+      line-height:1.45;
+      opacity:.92;
+    }
+
+    .footer{
+      margin-top: 14px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.75);
+      border:1px solid rgba(255,77,141,.22);
+    }
+
+    /* mobile tweaks */
+    @media (max-width: 520px){
+      .buttons{ height: 190px; }
+      #yesBtn{ left: 14px; top: 14px; }
+      #noBtn{ left: 160px; top: 22px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-hearts" id="bgHearts"></div>
+
+  <div class="wrap">
+    <div class="card" id="card">
+      <div class="sparkle"></div>
+
+      <!-- ASK VIEW -->
+      <div id="askView">
+        <div class="pill"><span class="dot"></span> kleine Frage mit großem Herzen</div>
+        <h1>Willst du mein Valentine sein? 💘</h1>
+        <p>
+          Ich hab da jemanden im Kopf… und irgendwie führt alles immer wieder zu dir.
+        </p>
+
+        <div class="stage">
+          <p style="margin-top:0; font-weight:700;">
+            Wähle eine Antwort:
+          </p>
+
+          <div class="buttons" id="btnArea">
+            <button id="yesBtn" aria-label="Ja">Ja 💖</button>
+            <button id="noBtn" aria-label="Nein">Nein 🙃</button>
+          </div>
+
+          <div class="tiny">Tipp: Versuch mal „Nein“… 😇</div>
+        </div>
+      </div>
+
+      <!-- SUCCESS VIEW -->
+      <div class="success" id="successView">
+        <div class="big-heart" aria-hidden="true"></div>
+        <h2>Yay! 💞</h2>
+        <p class="msg" id="successText">
+          Du hast gerade mein Herz offiziell glücklich gemacht. <br/>
+          Danke, dass du mein Valentine bist — Ich liebe dich 🌹✨
+        </p>
+
+        <div class="footer">
+          <span class="chip">🍓 Date-Idee: Spaziergang + Kakao</span>
+          <span class="chip">🎬 Date-Idee: Filmabend + Snacks</span>
+          <span class="chip">🫶 Ich mag dich. Sehr.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // --- cute background hearts ---
+  (function makeBackgroundHearts(){
+    const root = document.getElementById('bgHearts');
+    const count = 26;
+    for(let i=0;i<count;i++){
+      const h = document.createElement('div');
+      h.className = 'heart';
+      const left = Math.random()*100;
+      const dur = 8 + Math.random()*10;
+      const delay = -Math.random()*dur; // start at random position
+      const size = 10 + Math.random()*16;
+      h.style.left = left + 'vw';
+      h.style.animationDuration = dur + 's';
+      h.style.animationDelay = delay + 's';
+      h.style.width = size + 'px';
+      h.style.height = size + 'px';
+      h.style.opacity = (0.25 + Math.random()*0.55).toFixed(2);
+      root.appendChild(h);
+    }
+  })();
+
+  const askView = document.getElementById('askView');
+  const successView = document.getElementById('successView');
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const btnArea = document.getElementById('btnArea');
+
+  // Ensure "Nein" stays inside the area while escaping
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+  function moveNoButtonAway(mouseX, mouseY){
+    const areaRect = btnArea.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
+
+    // current center of button
+    const btnCx = btnRect.left + btnRect.width/2;
+    const btnCy = btnRect.top  + btnRect.height/2;
+
+    // vector away from mouse -> button
+    let vx = btnCx - mouseX;
+    let vy = btnCy - mouseY;
+
+    // if mouse is exactly on center, pick random direction
+    const len = Math.hypot(vx, vy) || 1;
+    vx /= len; vy /= len;
+
+    // add some randomness so it feels playful
+    const jitter = 0.45;
+    vx = vx*(1-jitter) + (Math.random()*2-1)*jitter;
+    vy = vy*(1-jitter) + (Math.random()*2-1)*jitter;
+
+    // step size based on area size
+    const step = 120; // px
+    const currentLeft = parseFloat(noBtn.style.left || '210');
+    const currentTop  = parseFloat(noBtn.style.top  || '22');
+
+    let newLeft = currentLeft + vx*step;
+    let newTop  = currentTop  + vy*step;
+
+    // boundaries inside btnArea (relative coords)
+    const padding = 8;
+    const maxLeft = areaRect.width  - btnRect.width  - padding;
+    const maxTop  = areaRect.height - btnRect.height - padding;
+
+    newLeft = clamp(newLeft, padding, maxLeft);
+    newTop  = clamp(newTop,  padding, maxTop);
+
+    // If it didn't move much (corner trapped), jump random
+    if (Math.abs(newLeft-currentLeft) < 8 && Math.abs(newTop-currentTop) < 8){
+      newLeft = padding + Math.random()*(maxLeft - padding);
+      newTop  = padding + Math.random()*(maxTop  - padding);
+    }
+
+    noBtn.style.left = newLeft + 'px';
+    noBtn.style.top  = newTop  + 'px';
+  }
+
+  // Make "Nein" dodge on mouse approach + also on focus (keyboard)
+  noBtn.addEventListener('mouseenter', (e) => {
+    moveNoButtonAway(e.clientX, e.clientY);
+  });
+
+  btnArea.addEventListener('mousemove', (e) => {
+    // If mouse gets close to "Nein", move it away
+    const btnRect = noBtn.getBoundingClientRect();
+    const mx = e.clientX, my = e.clientY;
+    const cx = btnRect.left + btnRect.width/2;
+    const cy = btnRect.top + btnRect.height/2;
+    const dist = Math.hypot(cx - mx, cy - my);
+
+    if (dist < 120) moveNoButtonAway(mx, my);
+  });
+
+  noBtn.addEventListener('focus', () => {
+    // keyboard users shouldn't be able to select "Nein" either
+    const areaRect = btnArea.getBoundingClientRect();
+    const mx = areaRect.left + areaRect.width * (0.2 + Math.random()*0.6);
+    const my = areaRect.top  + areaRect.height* (0.2 + Math.random()*0.6);
+    moveNoButtonAway(mx, my);
+    yesBtn.focus();
+  });
+
+  // YES -> show success view
+  yesBtn.addEventListener('click', () => {
+    askView.style.display = 'none';
+    successView.style.display = 'block';
+
+    // extra celebratory mini-hearts burst
+    burstHearts();
+  });
+
+  function burstHearts(){
+    const card = document.getElementById('card');
+    const burstCount = 18;
+    for(let i=0;i<burstCount;i++){
+      const s = document.createElement('div');
+      s.className = 'heart';
+      s.style.position = 'absolute';
+      s.style.left = (40 + Math.random()*20) + '%';
+      s.style.top = (52 + Math.random()*8) + '%';
+      const size = 10 + Math.random()*14;
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      s.style.opacity = '0.95';
+      s.style.animationDuration = (1.4 + Math.random()*0.9) + 's';
+      s.style.animationTimingFunction = 'ease-out';
+      s.style.filter = 'drop-shadow(0 8px 10px rgba(255,47,120,.2))';
+      card.appendChild(s);
+
+      // make them fly up and sideways a bit
+      const dx = (Math.random()*2 - 1) * 160;
+      const dy = - (120 + Math.random()*180);
+      s.animate([
+        { transform: 'translate(0,0) rotate(45deg) scale(1)', opacity: 1 },
+        { transform: `translate(${dx}px, ${dy}px) rotate(45deg) scale(1.1)`, opacity: 0 }
+      ], { duration: 1400 + Math.random()*900, easing: 'ease-out' });
+
+      setTimeout(() => s.remove(), 2600);
+    }
+  }
+</script>
+</body>
+</html>
